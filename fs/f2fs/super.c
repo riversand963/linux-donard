@@ -1153,6 +1153,12 @@ static void destroy_inodecache(void)
 	kmem_cache_destroy(f2fs_inode_cachep);
 }
 
+#ifdef YANQIN
+atomic_t f2fs_nr_direct_node_blocks = ATOMIC_INIT(0);
+atomic_t f2fs_nr_data_blocks = ATOMIC_INIT(0);
+atomic_t f2fs_prev_nr_direct_node_blocks = ATOMIC_INIT(0);
+atomic_t f2fs_prev_nr_data_blocks = ATOMIC_INIT(0);
+#endif
 static int __init init_f2fs_fs(void)
 {
 	int err;
@@ -1202,6 +1208,10 @@ fail:
 
 static void __exit exit_f2fs_fs(void)
 {
+#ifdef YANQIN
+    printk(KERN_INFO "[yjin] dnodes=%u data=%u\n",
+           atomic_read(&f2fs_nr_direct_node_blocks), atomic_read(&f2fs_nr_data_blocks));
+#endif
 	remove_proc_entry("fs/f2fs", NULL);
 	f2fs_destroy_root_stats();
 	unregister_filesystem(&f2fs_fs_type);

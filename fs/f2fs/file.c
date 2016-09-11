@@ -123,6 +123,12 @@ int f2fs_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
 		.for_reclaim = 0,
 	};
 
+#ifdef YANQIN
+  static int f2fs_sync_file_calls = 0;
+  int nr_data_blocks = 0, nr_direct_node_blocks = 0;
+  int prev_nr_data_blocks = 0, prev_nr_direct_node_blocks = 0;
+#endif
+
 	if (unlikely(f2fs_readonly(inode->i_sb)))
 		return 0;
 
@@ -191,6 +197,30 @@ int f2fs_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
 		ret = f2fs_issue_flush(F2FS_SB(inode->i_sb));
 	}
 out:
+#ifdef YANQIN
+  /*
+  ** Add 1 to nr_data_blocks to prevent dividing by zero
+  */
+  if ((++ f2fs_sync_file_calls % 2000)==0) {
+      nr_data_blocks = atomic_read(&f2fs_nr_data_blocks);
+      nr_direct_node_blocks = atomic_read(&f2fs_nr_direct_node_blocks);
+      prev_nr_data_blocks = atomic_read(&f2fs_prev_nr_data_blocks);
+      prev_nr_direct_node_blocks = atomic_read(&f2fs_prev_nr_direct_node_blocks);
+
+      nr_data_blocks -= prev_nr_data_blocks;
+      nr_direct_node_blocks -= prev_nr_direct_node_blocks;
+
+      printk(KERN_INFO "[yjin] dnodes=%d data=%d dnodes/data=%d\n",
+              nr_direct_node_blocks, nr_data_blocks,
+              100 * nr_direct_node_blocks / (1 + nr_data_blocks));
+
+      nr_data_blocks = atomic_read(&f2fs_nr_data_blocks);
+      nr_direct_node_blocks = atomic_read(&f2fs_nr_direct_node_blocks);
+      atomic_set(&f2fs_prev_nr_data_blocks, nr_data_blocks);
+      atomic_set(&f2fs_prev_nr_direct_node_blocks, nr_direct_node_blocks);
+
+  }
+#endif
 	trace_f2fs_sync_file_exit(inode, need_cp, datasync, ret);
 	return ret;
 }

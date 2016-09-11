@@ -1218,6 +1218,11 @@ static int f2fs_write_node_page(struct page *page,
 
 	f2fs_wait_on_page_writeback(page, NODE);
 
+#ifdef YANQIN
+  if (IS_DNODE(page))
+      atomic_inc(&f2fs_nr_direct_node_blocks);
+#endif
+
 	/* get old block addr of this node page */
 	nid = nid_of_node(page);
 	f2fs_bug_on(page->index != nid);

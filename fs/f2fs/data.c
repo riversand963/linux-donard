@@ -844,6 +844,9 @@ write:
 	else
 		err = do_write_data_page(page, &fio);
 	f2fs_unlock_op(sbi);
+#ifdef YANQIN
+  atomic_inc(&f2fs_nr_data_blocks);
+#endif
 done:
 	if (err && err != -ENOENT)
 		goto redirty_out;

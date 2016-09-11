@@ -20,6 +20,14 @@
 #include <linux/kobject.h>
 #include <linux/sched.h>
 
+#ifndef YANQIN
+#define YANQIN
+extern atomic_t f2fs_nr_direct_node_blocks;
+extern atomic_t f2fs_nr_data_blocks;
+extern atomic_t f2fs_prev_nr_direct_node_blocks;
+extern atomic_t f2fs_prev_nr_data_blocks;
+#endif
+
 #ifdef CONFIG_F2FS_CHECK_FS
 #define f2fs_bug_on(condition)	BUG_ON(condition)
 #define f2fs_down_write(x, y)	down_write_nest_lock(x, y)
