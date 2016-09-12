@@ -110,6 +110,10 @@ static int get_parent_ino(struct inode *inode, nid_t *pino)
 	return 1;
 }
 
+#ifdef YANQIN
+atomic_t f2fs_nr_sync_need_checkpoint = ATOMIC_INIT(0);
+atomic_t f2fs_nr_sync_no_checkpoint = ATOMIC_INIT(0);
+#endif
 int f2fs_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
 {
 	struct inode *inode = file->f_mapping->host;
@@ -164,6 +168,9 @@ int f2fs_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
 	if (need_cp) {
 		nid_t pino;
 
+#ifdef YANQIN
+    atomic_inc(&f2fs_nr_sync_need_checkpoint);
+#endif
 		/* all the dirty node pages should be flushed for POR */
 		ret = f2fs_sync_fs(inode->i_sb, 1);
 
@@ -182,6 +189,9 @@ int f2fs_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
 			up_write(&fi->i_sem);
 		}
 	} else {
+#ifdef YANQIN
+      atomic_inc(&f2fs_nr_sync_no_checkpoint);
+#endif
 		/* if there is no written node page, write its inode page */
 		while (!sync_node_pages(sbi, inode->i_ino, &wbc)) {
 			if (fsync_mark_done(sbi, inode->i_ino))

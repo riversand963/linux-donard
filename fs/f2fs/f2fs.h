@@ -22,6 +22,9 @@
 
 #ifndef YANQIN
 #define YANQIN
+extern atomic_t f2fs_nr_sync_need_checkpoint;
+extern atomic_t f2fs_nr_sync_no_checkpoint;
+
 extern atomic_t f2fs_nr_direct_node_blocks;
 extern atomic_t f2fs_nr_data_blocks;
 extern atomic_t f2fs_prev_nr_direct_node_blocks;

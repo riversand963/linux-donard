@@ -1209,6 +1209,8 @@ fail:
 static void __exit exit_f2fs_fs(void)
 {
 #ifdef YANQIN
+    printk(KERN_INFO "[yjin] sync_need_checkpoint=%d sync_no_checkpoint=%d\n",
+           atomic_read(&f2fs_nr_sync_need_checkpoint), atomic_read(&f2fs_nr_sync_no_checkpoint));
     printk(KERN_INFO "[yjin] dnodes=%u data=%u\n",
            atomic_read(&f2fs_nr_direct_node_blocks), atomic_read(&f2fs_nr_data_blocks));
 #endif
