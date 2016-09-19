@@ -52,6 +52,9 @@ extern atomic_t f2fs_prev_nr_data_blocks;
 #define F2FS_MOUNT_INLINE_XATTR		0x00000080
 #define F2FS_MOUNT_INLINE_DATA		0x00000100
 #define F2FS_MOUNT_FLUSH_MERGE		0x00000200
+#ifdef YANQIN
+#define F2FS_MOUNT_FFSYNC         0x00000400
+#endif
 
 #define clear_opt(sbi, option)	(sbi->mount_opt.opt &= ~F2FS_MOUNT_##option)
 #define set_opt(sbi, option)	(sbi->mount_opt.opt |= F2FS_MOUNT_##option)

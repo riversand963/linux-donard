@@ -52,6 +52,9 @@ enum {
 	Opt_inline_xattr,
 	Opt_inline_data,
 	Opt_flush_merge,
+#ifdef YANQIN
+  Opt_ffsync,
+#endif
 	Opt_err,
 };
 
@@ -69,6 +72,9 @@ static match_table_t f2fs_tokens = {
 	{Opt_inline_xattr, "inline_xattr"},
 	{Opt_inline_data, "inline_data"},
 	{Opt_flush_merge, "flush_merge"},
+#ifdef YANQIN
+  {Opt_ffsync, "ffsync"},
+#endif
 	{Opt_err, NULL},
 };
 
@@ -339,6 +345,12 @@ static int parse_options(struct super_block *sb, char *options)
 		case Opt_flush_merge:
 			set_opt(sbi, FLUSH_MERGE);
 			break;
+#ifdef YANQIN
+    case Opt_ffsync:
+      f2fs_msg(sb, KERN_INFO, "[yjin] ffsync enabled");
+      set_opt(sbi, FFSYNC);
+      break;
+#endif
 		default:
 			f2fs_msg(sb, KERN_ERR,
 				"Unrecognized mount option \"%s\" or missing value",

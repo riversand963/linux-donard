@@ -191,6 +191,9 @@ int f2fs_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
 	} else {
 #ifdef YANQIN
       atomic_inc(&f2fs_nr_sync_no_checkpoint);
+      if (test_opt(sbi, FFSYNC)) {
+          ret = f2fs_issue_flush(F2FS_SB(inode->i_sb));
+      } else {
 #endif
 		/* if there is no written node page, write its inode page */
 		while (!sync_node_pages(sbi, inode->i_ino, &wbc)) {
@@ -204,7 +207,10 @@ int f2fs_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
 		ret = wait_on_node_pages_writeback(sbi, inode->i_ino);
 		if (ret)
 			goto out;
+#ifdef YANQIN
 		ret = f2fs_issue_flush(F2FS_SB(inode->i_sb));
+      }
+#endif
 	}
 out:
 #ifdef YANQIN
